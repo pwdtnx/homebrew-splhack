@@ -13,6 +13,26 @@ class MacvimKaoriya < Formula
   GETTEXT = "#{HOMEBREW_PREFIX}/Cellar/gettext-mk/0.18.1.1"
 
   def install
+    def envpath(env)
+        "~/.anyenv/envs/#{env}/bin/#{env}"
+    end
+
+    python2 = '2.7.6'
+    python3 = '3.3.3'
+    ruby19 = '1.9.3-p484'
+    ruby20 = '2.0.0-p353'
+    lua51 = '5.1.5'
+    lua52 = '5.2.2'
+    luajit = '2.0.2'
+
+    prefix_python2 = `#{envpath("pyenv")} prefix #{python2}`.chomp
+    prefix_python3 = `#{envpath("pyenv")} prefix #{python3}`.chomp
+    prefix_ruby19 = `#{envpath("rbenv")} prefix #{ruby19}`.chomp
+    prefix_ruby20 = `#{envpath("rbenv")} prefix #{ruby20}`.chomp
+    prefix_lua51 = `#{envpath("luaenv")} prefix #{lua51}`.chomp
+    prefix_lua52 = `#{envpath("luaenv")} prefix #{lua52}`.chomp
+    prefix_luajit = `#{envpath("luaenv")} prefix luajit-#{luajit}`.chomp
+
     ENV["HOMEBREW_CCCFG"] = "bi6" if build.with? 'binary-release'
     ENV.remove_macosxsdk
     ENV.macosxsdk '10.7'
@@ -21,19 +41,13 @@ class MacvimKaoriya < Formula
     ENV.append 'LDFLAGS', '-mmacosx-version-min=10.7 -headerpad_max_install_names'
     ENV.append 'VERSIONER_PERL_VERSION', '5.12'
     ENV.append 'VERSIONER_PYTHON_VERSION', '2.7'
-    ENV.append 'vi_cv_path_python3', '/usr/local/bin/python3'
-    ENV.append 'vi_cv_path_ruby19', '/usr/local/bin/ruby20'
-
-    luajit = '2.0.2'
-    [
-      "#{HOMEBREW_PREFIX}/Cellar/python3/3.3.2/bin/python3",
-      "#{HOMEBREW_PREFIX}/Cellar/ruby/2.0.0-p247/bin/ruby20",
-      "#{HOMEBREW_PREFIX}/Cellar/lua/5.1.5/bin/lua",
-      "#{HOMEBREW_PREFIX}/Cellar/lua52/5.2.1/bin/lua",
-      "#{HOMEBREW_PREFIX}/Cellar/luajit/#{luajit}/bin/luajit",
-    ].each do |file|
-      raise file unless File.exist?(file)
-    end
+    ENV.append 'vi_cv_path_python3', "#{prefix_python3}/bin/python"
+    ENV.append 'vi_cv_path_python', "#{prefix_python2}/bin/python"
+    ENV.append 'vi_cv_path_ruby', "#{prefix_ruby20}/bin/ruby"
+    # ENV.append 'vi_cv_path_ruby19', "#{prefix_ruby19}/bin/ruby"
+    ENV.append 'vi_cv_path_lua52', "#{prefix_lua52}/bin/lua"
+    ENV.append 'vi_cv_path_lua', "#{prefix_lua51}/bin/lua"
+    ENV.append 'vi_cv_path_luajit', "#{prefix_luajit}/bin/luajit"
 
     system './configure', "--prefix=#{prefix}",
                           '--with-features=huge',
@@ -47,9 +61,10 @@ class MacvimKaoriya < Formula
                           '--enable-rubyinterp=dynamic',
                           '--enable-ruby19interp=dynamic',
                           '--enable-luainterp=dynamic',
-                          '--with-lua-prefix=/usr/local',
+                          #'--with-lua-prefix=/usr/local',
                           '--enable-lua52interp=dynamic',
-                          '--with-lua52-prefix=/usr/local/Cellar/lua52/5.2.1'
+                          #'--with-lua52-prefix=/usr/local/Cellar/lua52/5.2.1'
+                          '--enable-perlinterp'
 
     gettext = "#{GETTEXT}/bin/"
     inreplace 'src/po/Makefile' do |s|
@@ -100,7 +115,7 @@ class MacvimKaoriya < Formula
       cp lib, frameworks
     end
 
-    cp "#{HOMEBREW_PREFIX}/lib/libluajit-5.1.#{luajit}.dylib", frameworks
+    cp "#{prefix_luajit}/lib/libluajit-5.1.#{luajit}.dylib", frameworks
     File.open(vimdir + 'vimrc', 'a').write <<EOL
 let $LUA_DLL = simplify($VIM . '/../../Frameworks/libluajit-5.1.#{luajit}.dylib')
 EOL
