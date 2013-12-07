@@ -118,6 +118,10 @@ class MacvimKaoriya < Formula
 
     cp "#{brew_prefix('luajit', luajit)}/lib/libluajit-5.1.#{luajit}.dylib", frameworks
     File.open(vimdir + 'vimrc', 'a').write <<EOL
+let $PERL_DLL = "#{brew_prefix('perl518', perl518)}/lib/#{perl518}/darwin-thread-multi-2level/CORE/libperl.dylib"
+let $PYTHON_DLL = "#{brew_prefix('python', python2)}/Frameworks/Python.framework/Versions/2.7/Python"
+let $PYTHON3_DLL = "#{brew_prefix('python3', python3)}/Frameworks/Python.framework/Versions/3.3/Python"
+let $RUBY_DLL = "#{brew_prefix('ruby', ruby20)}/lib/libruby.2.0.dylib"
 let $LUA_DLL = simplify($VIM . '/../../Frameworks/libluajit-5.1.#{luajit}.dylib')
 EOL
   end
