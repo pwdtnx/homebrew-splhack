@@ -22,7 +22,7 @@ class MacvimKaoriya < Formula
     luajit = '2.0.2'
 
     def brew_cellar(pkg)
-        `brew --cellar #{pkg}`.chomp
+        `#{HOMEBREW_PREFIX}/bin/brew --cellar #{pkg}`.chomp
     end
 
     def brew_prefix(pkg, ver)
