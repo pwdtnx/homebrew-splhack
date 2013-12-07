@@ -19,7 +19,6 @@ class MacvimKaoriya < Formula
 
     python2 = '2.7.6'
     python3 = '3.3.3'
-    ruby19 = '1.9.3-p484'
     ruby20 = '2.0.0-p353'
     lua51 = '5.1.5'
     lua52 = '5.2.2'
@@ -27,7 +26,6 @@ class MacvimKaoriya < Formula
 
     prefix_python2 = `#{envpath("pyenv")} prefix #{python2}`.chomp
     prefix_python3 = `#{envpath("pyenv")} prefix #{python3}`.chomp
-    prefix_ruby19 = `#{envpath("rbenv")} prefix #{ruby19}`.chomp
     prefix_ruby20 = `#{envpath("rbenv")} prefix #{ruby20}`.chomp
     prefix_lua51 = `#{envpath("luaenv")} prefix #{lua51}`.chomp
     prefix_lua52 = `#{envpath("luaenv")} prefix #{lua52}`.chomp
@@ -44,7 +42,6 @@ class MacvimKaoriya < Formula
     ENV.append 'vi_cv_path_python3', "#{prefix_python3}/bin/python"
     ENV.append 'vi_cv_path_python', "#{prefix_python2}/bin/python"
     ENV.append 'vi_cv_path_ruby', "#{prefix_ruby20}/bin/ruby"
-    #ENV.append 'vi_cv_path_ruby19', "#{prefix_ruby19}/bin/ruby"
     ENV.append 'vi_cv_path_lua52', "#{prefix_lua52}/bin/lua"
     ENV.append 'vi_cv_path_lua', "#{prefix_lua51}/bin/lua"
     ENV.append 'vi_cv_path_luajit', "#{prefix_luajit}/bin/luajit"
@@ -59,11 +56,11 @@ class MacvimKaoriya < Formula
                           '--enable-pythoninterp=dynamic',
                           '--enable-python3interp=dynamic',
                           '--enable-rubyinterp=dynamic',
-                          '--enable-ruby19interp=dynamic',
                           '--enable-luainterp=dynamic',
                           "--with-lua-prefix=#{prefix_lua51}",
                           '--enable-lua52interp=dynamic',
                           "--with-lua52-prefix=#{prefix_lua52}",
+                          '--with-luajit',
                           '--enable-perlinterp=dynamic'
 
     gettext = "#{GETTEXT}/bin/"
