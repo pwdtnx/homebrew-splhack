@@ -21,6 +21,14 @@ class MacvimKaoriya < Formula
     lua52 = '5.2.2'
     luajit = '2.0.2'
 
+    def brew_cellar(pkg)
+        "#{`brew --cellar #{pkg}`}".chomp
+    end
+
+    def brew_prefix(pkg, ver)
+        "#{brew_cellar(pkg)}/#{ver}"
+    end
+
     ENV["HOMEBREW_CCCFG"] = "bi6" if build.with? 'binary-release'
     ENV.remove_macosxsdk
     ENV.macosxsdk '10.7'
@@ -30,12 +38,16 @@ class MacvimKaoriya < Formula
     ENV.append 'VERSIONER_PERL_VERSION', '5.12'
     ENV.append 'VERSIONER_PYTHON19_VERSION', '2.7'
     
-    ENV.append 'vi_cv_path_python', "#{`brew --cellar python`}/#{python2}/bin/python"
-    ENV.append 'vi_cv_path_python3', "#{`brew --cellar python3`}/#{python3}/bin/python3"
-    ENV.append 'vi_cv_path_ruby', "#{`brew --cellar ruby`}/#{ruby20}/bin/ruby"
-    ENV.append 'vi_cv_path_lua', "#{`brew --cellar lua`}/#{lua51}/bin/lua"
-    ENV.append 'vi_cv_path_lua52', "#{`brew --cellar lua52`}/#{lua52}/bin/lua"
-    ENV.append 'vi_cv_path_luajit', "#{`brew --cellar luajit`}/#{luajit}/bin/luajit"
+    def set_vi_cv_path(pkg, ver, rt)
+        ENV.append "vi_cv_path_#{pkg}", "#{brew_prefix(pkg, ver)}/bin/#{rt}"
+    end
+
+    set_vi_cv_path('python', python2, 'python')
+    set_vi_cv_path('python3', python3, 'python3')
+    set_vi_cv_path('ruby', ruby20, 'ruby')
+    set_vi_cv_path('lua', lua51, 'lua')
+    set_vi_cv_path('lua52', lua52, 'lua')
+    set_vi_cv_path('luajit', luajit, 'luajit')
 
     system './configure', "--prefix=#{prefix}",
                           '--with-features=huge',
@@ -50,9 +62,10 @@ class MacvimKaoriya < Formula
                           '--enable-ruby19interp=dynamic',
                           '--enable-perlinterp=dynamic',
                           '--enable-luainterp=dynamic',
-                          "--with-lua-prefix=#{`brew --cellar lua`}/#{lua51}",
+                          "--with-lua-prefix=#{brew_prefix('lua', lua51)}",
                           '--enable-lua52interp=dynamic',
-                          "--with-lua52-prefix=#{`brew --cellar lua52`}/#{lua52}"
+                          "--with-lua52-prefix=#{brew_prefix('lua52', lua52)}",
+                          '--with-luajit'
 
     gettext = "#{GETTEXT}/bin/"
     inreplace 'src/po/Makefile' do |s|
@@ -103,7 +116,7 @@ class MacvimKaoriya < Formula
       cp lib, frameworks
     end
 
-    cp "#{`brew --cellar luajit`}/#{luajit}/lib/libluajit-5.1.#{luajit}.dylib", frameworks
+    cp "#{brew_prefix('luajit', luajit)}/lib/libluajit-5.1.#{luajit}.dylib", frameworks
     File.open(vimdir + 'vimrc', 'a').write <<EOL
 let $LUA_DLL = simplify($VIM . '/../../Frameworks/libluajit-5.1.#{luajit}.dylib')
 EOL
