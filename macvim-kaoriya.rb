@@ -44,7 +44,7 @@ class MacvimKaoriya < Formula
     ENV.append 'vi_cv_path_python3', "#{prefix_python3}/bin/python"
     ENV.append 'vi_cv_path_python', "#{prefix_python2}/bin/python"
     ENV.append 'vi_cv_path_ruby', "#{prefix_ruby20}/bin/ruby"
-    # ENV.append 'vi_cv_path_ruby19', "#{prefix_ruby19}/bin/ruby"
+    #ENV.append 'vi_cv_path_ruby19', "#{prefix_ruby19}/bin/ruby"
     ENV.append 'vi_cv_path_lua52', "#{prefix_lua52}/bin/lua"
     ENV.append 'vi_cv_path_lua', "#{prefix_lua51}/bin/lua"
     ENV.append 'vi_cv_path_luajit', "#{prefix_luajit}/bin/luajit"
@@ -61,8 +61,10 @@ class MacvimKaoriya < Formula
                           '--enable-rubyinterp=dynamic',
                           '--enable-ruby19interp=dynamic',
                           '--enable-luainterp=dynamic',
+                          "--with-lua-prefix=#{prefix_lua51}",
                           '--enable-lua52interp=dynamic',
-                          '--enable-perlinterp'
+                          "--with-lua52-prefix=#{prefix_lua52}",
+                          '--enable-perlinterp=dynamic'
 
     gettext = "#{GETTEXT}/bin/"
     inreplace 'src/po/Makefile' do |s|
