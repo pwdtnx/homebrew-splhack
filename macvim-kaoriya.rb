@@ -59,7 +59,7 @@ class MacvimKaoriya < Formula
                           '--enable-pythoninterp=dynamic',
                           '--enable-python3interp=dynamic',
                           '--enable-rubyinterp=dynamic',
-                          '--enable-ruby19interp=dynamic',
+                          #'--enable-ruby19interp=dynamic',
                           '--enable-perlinterp=dynamic',
                           '--enable-luainterp=dynamic',
                           "--with-lua-prefix=#{brew_prefix('lua', lua51)}",
